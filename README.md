@@ -82,5 +82,6 @@ como verificar cada parte) em [`docs/PRD.md`](docs/PRD.md).
 - Não decide permissão/papel dentro do seu sistema — só responde "essa
   identidade pode entrar, sim/não". `is_admin` (ou equivalente) continua
   100% controlado localmente por cada sistema-alvo.
-- Não suporta rotação de chave sem downtime ainda — o Janus hoje expõe
-  sempre 1 chave só via JWKS.
+- Não executa rotação de chave — ele apenas consome o JWKS exposto pelo Janus.
+  Quando o Janus publica chave atual e chave anterior durante uma janela de
+  rotação, o cliente escolhe a chave correta pelo `kid` do token.
