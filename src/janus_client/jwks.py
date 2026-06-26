@@ -26,6 +26,7 @@ class JwksCache:
         cache_ttl_seconds: int = _DEFAULT_CACHE_TTL_SECONDS,
         http_client: httpx.Client | None = None,
     ) -> None:
+        """Configura o cache; cria um httpx.Client interno se nenhum for fornecido."""
         self._jwks_url = jwks_url
         self._ttl = cache_ttl_seconds
         self._http_client = http_client or httpx.Client(timeout=5.0)
@@ -71,5 +72,6 @@ class JwksCache:
         return self._cached_keys[kid]
 
     def close(self) -> None:
+        """Fecha o httpx.Client interno, se este cache for dono dele."""
         if self._owns_client:
             self._http_client.close()

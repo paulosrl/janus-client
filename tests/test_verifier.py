@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from jose import jwt as jose_jwt
 
 from janus_client import JanusTokenError, JanusTokenExpiredError, JanusVerifier
 from tests.conftest import make_token
@@ -70,3 +71,21 @@ def test_unknown_kid_raises_token_error(httpx_mock, rsa_keypair, jwks_body, kid)
     verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
     with pytest.raises(JanusTokenError):
         verifier.verify(token)
+
+
+def test_token_without_kid_raises_token_error(httpx_mock, rsa_keypair):
+    token = jose_jwt.encode(
+        {"sub": "user-1", "iss": "janus", "aud": "janus"},
+        rsa_keypair[0],
+        algorithm="RS256",
+    )
+
+    verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
+    with pytest.raises(JanusTokenError):
+        verifier.verify(token)
+
+
+def test_close_closes_underlying_jwks_cache(httpx_mock):
+    verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
+    verifier.close()
+    assert verifier._jwks._http_client.is_closed

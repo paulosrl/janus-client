@@ -35,3 +35,27 @@ def test_get_key_network_failure_raises(httpx_mock):
     cache = JwksCache(JWKS_URL)
     with pytest.raises(JanusJwksFetchError):
         cache.get_key("qualquer-kid")
+
+
+def test_get_key_force_refresh_kid_still_missing_raises(httpx_mock, jwks_body, kid):
+    httpx_mock.add_response(url=JWKS_URL, json=jwks_body)
+    httpx_mock.add_response(url=JWKS_URL, json=jwks_body)
+    cache = JwksCache(JWKS_URL)
+    cache.get_key(kid)
+    with pytest.raises(JanusJwksFetchError):
+        cache.get_key("kid-inexistente", force_refresh=True)
+
+
+def test_get_key_response_without_keys_list_raises(httpx_mock):
+    httpx_mock.add_response(url=JWKS_URL, json={"keys": "nao-e-uma-lista"})
+    cache = JwksCache(JWKS_URL)
+    with pytest.raises(JanusJwksFetchError):
+        cache.get_key("qualquer-kid")
+
+
+def test_close_closes_owned_http_client(httpx_mock, jwks_body, kid):
+    httpx_mock.add_response(url=JWKS_URL, json=jwks_body)
+    cache = JwksCache(JWKS_URL)
+    cache.get_key(kid)
+    cache.close()
+    assert cache._http_client.is_closed

@@ -29,6 +29,7 @@ class JanusVerifier:
         audience: str,
         cache_ttl_seconds: int = 3600,
     ) -> None:
+        """Configura o verificador contra um JWKS, issuer e audience fixos."""
         self._issuer = issuer
         self._audience = audience
         self._jwks = JwksCache(jwks_url, cache_ttl_seconds=cache_ttl_seconds)
@@ -76,4 +77,5 @@ class JanusVerifier:
         )
 
     def close(self) -> None:
+        """Libera o cliente HTTP usado para buscar o JWKS, se for dono dele."""
         self._jwks.close()

@@ -29,7 +29,6 @@ Com FastAPI (requer extra ``janus-client[fastapi]``)::
 from janus_client.exceptions import (
     JanusClientError,
     JanusJwksFetchError,
-    JanusSystemNotAuthorizedError,
     JanusTokenError,
     JanusTokenExpiredError,
 )
@@ -44,7 +43,6 @@ __all__ = [
     "JanusClientError",
     "JanusTokenError",
     "JanusTokenExpiredError",
-    "JanusSystemNotAuthorizedError",
     "JanusJwksFetchError",
     "__version__",
 ]

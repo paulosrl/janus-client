@@ -7,7 +7,7 @@ name = "janus-client"
 version = "0.1.0"
 description = "Cliente leve para validar access tokens emitidos pelo Janus (JWKS + claim authorized_systems)"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 
 dependencies = [
@@ -25,6 +25,9 @@ dev = [
     "pytest>=8.0.0",
     "pytest-httpx>=0.30.0",
     "cryptography>=42.0.0",
+    "types-python-jose>=3.3.0",
+    "mypy>=1.10.0",
+    "pytest-cov>=5.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]
