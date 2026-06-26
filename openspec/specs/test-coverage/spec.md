@@ -21,3 +21,7 @@ Os caminhos de erro identificados na revisão (falha de fetch do JWKS, `kid` des
 #### Scenario: JWKS retorna resposta sem a lista "keys"
 - **WHEN** a resposta HTTP do endpoint JWKS não contém a chave `"keys"` como lista
 - **THEN** um teste verifica que `JwksCache._fetch` (via `get_key`) levanta `JanusJwksFetchError`
+
+#### Scenario: Token assinado validamente mas com claim obrigatória ausente
+- **WHEN** `JanusVerifier.verify` recebe um token com assinatura, `iss`, `aud` e `exp` válidos, mas sem uma claim obrigatória (ex: `sub`)
+- **THEN** um teste verifica que `JanusTokenError` é levantada — nunca um `KeyError` cru

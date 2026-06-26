@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import time
+
 import pytest
 from jose import jwt as jose_jwt
 
@@ -79,6 +81,27 @@ def test_token_without_kid_raises_token_error(httpx_mock, rsa_keypair):
         rsa_keypair[0],
         algorithm="RS256",
     )
+
+    verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
+    with pytest.raises(JanusTokenError):
+        verifier.verify(token)
+
+
+def test_token_missing_required_claim_raises_token_error(httpx_mock, rsa_keypair, jwks_body, kid):
+    httpx_mock.add_response(url=JWKS_URL, json=jwks_body)
+    now = int(time.time())
+    claims = {
+        # "sub" omitido deliberadamente — token assinado e válido, claim obrigatória ausente.
+        "jti": "jti-1",
+        "email": "user@example.com",
+        "role": "user",
+        "authorized_systems": [],
+        "iss": "janus",
+        "aud": "janus",
+        "iat": now,
+        "exp": now + 3600,
+    }
+    token = jose_jwt.encode(claims, rsa_keypair[0], algorithm="RS256", headers={"kid": kid})
 
     verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
     with pytest.raises(JanusTokenError):

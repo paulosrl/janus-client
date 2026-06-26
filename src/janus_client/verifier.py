@@ -39,7 +39,8 @@ class JanusVerifier:
 
         Raises:
             JanusTokenExpiredError: token estruturalmente válido, mas expirado.
-            JanusTokenError: token inválido (assinatura, formato, kid desconhecido).
+            JanusTokenError: token inválido (assinatura, formato, kid desconhecido,
+                claim obrigatória ausente).
         """
         try:
             header = jwt.get_unverified_header(token)
@@ -68,13 +69,16 @@ class JanusVerifier:
         except JWTError as exc:
             raise JanusTokenError(f"Token inválido: {exc}") from exc
 
-        return JanusTokenPayload(
-            sub=claims["sub"],
-            email=claims["email"],
-            role=claims["role"],
-            expires_at=datetime.fromtimestamp(claims["exp"], tz=UTC),
-            authorized_systems=claims.get("authorized_systems", []),
-        )
+        try:
+            return JanusTokenPayload(
+                sub=claims["sub"],
+                email=claims["email"],
+                role=claims["role"],
+                expires_at=datetime.fromtimestamp(claims["exp"], tz=UTC),
+                authorized_systems=claims.get("authorized_systems", []),
+            )
+        except KeyError as exc:
+            raise JanusTokenError(f"Token sem a claim obrigatória: {exc}") from exc
 
     def close(self) -> None:
         """Libera o cliente HTTP usado para buscar o JWKS, se for dono dele."""
