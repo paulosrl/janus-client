@@ -67,6 +67,16 @@ token (JWT compacto)
 
 A dependency `require_system_access` (extra `fastapi`) chama `verify()` e traduz as exceções acima em respostas HTTP: `401` para token ausente/inválido/expirado, `403` se o token é válido mas não autoriza o `slug` pedido.
 
+## Desenvolvimento
+
+```bash
+uv sync --extra fastapi   # instala core + extra fastapi + dev deps
+./scripts/verify.sh       # pytest + cobertura + mypy + ruff, nessa ordem
+```
+
+Documentação completa do codebase (passo a passo, módulo por módulo, e
+como verificar cada parte) em [`docs/PRD.md`](docs/PRD.md).
+
 ## O que isso NÃO faz
 
 - Não decide permissão/papel dentro do seu sistema — só responde "essa
