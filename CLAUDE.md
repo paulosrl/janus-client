@@ -38,7 +38,7 @@ Fluxo de `JanusVerifier.verify(token)` (src/janus_client/verifier.py):
 ### Limites de design
 
 - Este cliente NÃO decide permissão/papel dentro do sistema — só responde "essa identidade pode entrar em X, sim/não". `is_admin` e equivalentes ficam 100% sob controle de cada sistema-alvo.
-- Sem suporte a rotação de chave sem downtime ainda — Janus hoje expõe só 1 chave via JWKS.
+- O cliente não executa rotação — ele só consome o JWKS exposto pelo Janus. Durante uma janela de rotação, o Janus expõe chave atual + anterior simultaneamente, e o `JwksCache` escolhe a chave certa pelo `kid` do token (sem corrupção de estado, sem downtime).
 - Escrita do `JwksCache` não é thread-safe sob refresh concorrente; pior caso é 1 fetch de rede extra, sem corrupção de estado.
 
 ## Workflow OpenSpec
