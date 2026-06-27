@@ -11,6 +11,27 @@ pip install janus-client          # core (verify + JWKS)
 pip install janus-client[fastapi] # + dependency factory pra FastAPI
 ```
 
+### Versão fixada (consumidores externos)
+
+Este pacote não é publicado em índice PyPI — releases são identificados por tag git (`vMAJOR.MINOR.PATCH`, ver [CHANGELOG.md](CHANGELOG.md)). Um repositório externo (ex: `xavier`) que dependa de uma versão exata, em vez de seguir `HEAD` da branch principal, deve apontar pra tag:
+
+```bash
+uv add "janus-client @ git+https://github.com/paulosrl/janus-client.git@v0.1.0"
+```
+
+ou, em `pyproject.toml`:
+
+```toml
+[tool.uv.sources]
+janus-client = { git = "https://github.com/paulosrl/janus-client.git", tag = "v0.1.0" }
+```
+
+Versionamento segue SemVer em relação à API pública exportada em `src/janus_client/__init__.py` (`JanusVerifier`, `JanusTokenPayload`, exceções, e `janus_client.fastapi.require_system_access`):
+
+- **MAJOR**: remoção ou mudança incompatível em símbolo público.
+- **MINOR**: adição compatível (novo símbolo, novo parâmetro opcional).
+- **PATCH**: correção sem mudança de superfície pública.
+
 ## Uso
 
 ```python
@@ -76,6 +97,15 @@ uv sync --extra fastapi   # instala core + extra fastapi + dev deps
 
 Documentação completa do codebase (passo a passo, módulo por módulo, e
 como verificar cada parte) em [`docs/PRD.md`](docs/PRD.md).
+
+## Processo de release
+
+Pra publicar uma nova versão (depois de mudar `version` em `pyproject.toml` e `__version__` em `src/janus_client/__init__.py`):
+
+1. Atualizar `CHANGELOG.md` com a nova seção `[MAJOR.MINOR.PATCH] - YYYY-MM-DD`.
+2. Commitar o bump de versão + changelog.
+3. Criar tag anotada: `git tag -a vMAJOR.MINOR.PATCH -m "..."` no commit do bump.
+4. `git push origin vMAJOR.MINOR.PATCH` — só a partir daqui a versão está disponível pra consumidores pinarem.
 
 ## O que isso NÃO faz
 
