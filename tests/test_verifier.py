@@ -108,6 +108,19 @@ def test_token_missing_required_claim_raises_token_error(httpx_mock, rsa_keypair
         verifier.verify(token)
 
 
+def test_verify_token_signed_by_second_key_during_rotation(
+    httpx_mock, rsa_keypair_2, jwks_body_rotation, kid_2
+):
+    httpx_mock.add_response(url=JWKS_URL, json=jwks_body_rotation)
+    token = make_token(rsa_keypair_2, kid_2, sub="user-2", authorized_systems=["xavier"])
+
+    verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
+    payload = verifier.verify(token)
+
+    assert payload.sub == "user-2"
+    assert payload.authorizes("xavier") is True
+
+
 def test_close_closes_underlying_jwks_cache(httpx_mock):
     verifier = JanusVerifier(jwks_url=JWKS_URL, issuer="janus", audience="janus")
     verifier.close()
